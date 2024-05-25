@@ -4,11 +4,8 @@ import 'dart:js';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:untitled34/project/show_subjects.dart';
-import 'package:untitled34/test%20screen/remember.dart';
 import 'package:untitled34/project/show_teachers.dart';
-import 'package:untitled34/test%20screen/videos.dart';
 
-import '../test screen/add_video.dart';
 class Home extends StatefulWidget {
   @override
   State<Home> createState() => _HomeState();
@@ -97,10 +94,6 @@ backgroundColor: Colors.white70,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,),
                 onPressed: (){
-                  Navigator.push(
-                    context, MaterialPageRoute(builder: (context) {
-                    return Videos();
-                  }),);
                 },
                 child:  Container( decoration: BoxDecoration(
                      ),

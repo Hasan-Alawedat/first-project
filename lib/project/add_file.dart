@@ -1,22 +1,21 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import '../project/add_teacher.dart';
 
-class FileUploader extends StatefulWidget {
-  FileUploader(String s);
-
+class AddFile extends StatefulWidget {
   @override
-  State<FileUploader> createState() => _FileUploaderState();
+  State<AddFile> createState() => _FileUploaderState();
 }
 
-class _FileUploaderState extends State<FileUploader> {
-  late File _selectedFile;
+class _FileUploaderState extends State<AddFile> {
+  Uint8List? _selectedFileBytes;
+  String? _selectedFileName;
+  double? _selectedFileSize; // لإضافة حجم الملف
   bool _isUploading = false;
-  late String _uploadMessage;
+  String _uploadMessage = '';
   List<Subject> _subjects = [];
   String? _selectedSubjectName;
   int? _selectedSubjectId;
@@ -25,8 +24,6 @@ class _FileUploaderState extends State<FileUploader> {
   void initState() {
     super.initState();
     _loadSubjects();
-    _selectedFile = File('');
-    _uploadMessage = '';
   }
 
   Future<void> _loadSubjects() async {
@@ -50,19 +47,28 @@ class _FileUploaderState extends State<FileUploader> {
   }
 
   Future<void> _pickFile() async {
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['pdf'],
-    );
-    if (result != null && result.files.isNotEmpty && result.files.single.path != null) {
-      setState(() {
-        _selectedFile = File(result.files.single.path!);
-      });
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf'],
+      );
+      if (result != null && result.files.isNotEmpty && result.files.single.bytes != null) {
+        setState(() {
+          _selectedFileBytes = result.files.single.bytes;
+          _selectedFileName = result.files.single.name;
+          _selectedFileSize = result.files.single.size / (1024 * 1024); // تحويل الحجم إلى ميغابايت
+          print('File selected: $_selectedFileName, Size: $_selectedFileSize MB'); // Debug print
+        });
+      } else {
+        print('No file selected or bytes are null'); // Debug print
+      }
+    } catch (e) {
+      print('Error picking file: $e'); // Debug print
     }
   }
 
   Future<void> _uploadFile() async {
-    if (_selectedFile.path.isEmpty) return;
+    if (_selectedFileBytes == null) return;
 
     setState(() {
       _isUploading = true;
@@ -72,7 +78,11 @@ class _FileUploaderState extends State<FileUploader> {
 
     try {
       var request = http.MultipartRequest('POST', uploadUrl)
-        ..files.add(await http.MultipartFile.fromPath('file', _selectedFile.path));
+        ..files.add(http.MultipartFile.fromBytes(
+          'file',
+          _selectedFileBytes!,
+          filename: _selectedFileName,
+        ));
       var response = await request.send();
 
       if (response.statusCode == 200) {
@@ -99,7 +109,6 @@ class _FileUploaderState extends State<FileUploader> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-
       home: Scaffold(
         body: ListView(
           padding: EdgeInsets.all(20),
@@ -127,12 +136,24 @@ class _FileUploaderState extends State<FileUploader> {
                       child: Text('اختر ملف PDF'),
                     ),
                     SizedBox(height: 20),
-                    _selectedFile.path.isNotEmpty
-                        ? Text(
-                      'الملف المختار: ${_selectedFile.path.split('/').last}',
-                      style: TextStyle(fontSize: 16),
+                    _selectedFileName != null
+                        ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'الملف المختار : $_selectedFileName',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        Text(
+                          'حجم الملف : ${_selectedFileSize!.toStringAsFixed(2)} ميغابايت',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ],
                     )
-                        : SizedBox.shrink(),
+                        : Text(
+                      'لم يتم اختيار أي ملف',
+                      style: TextStyle(fontSize: 16, color: Colors.red),
+                    ),
                     SizedBox(height: 20),
                     _isUploading
                         ? CircularProgressIndicator()

@@ -4,9 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:untitled34/project/register_admin.dart';
-import 'package:untitled34/test%20screen/add_file.dart';
+import 'package:untitled34/project/add_video.dart';
+import 'package:untitled34/project/add_file.dart';
 import 'package:untitled34/project/add_teacher.dart';
-import 'package:untitled34/test%20screen/add_video.dart';
 import 'package:untitled34/project/signin.dart';
 import 'package:untitled34/project/home2.dart';
 import 'package:untitled34/project/add_subject.dart';
@@ -226,7 +226,7 @@ UserAccountsDrawerHeader(
                onPressed: (){
                  Navigator.push(
                    context, MaterialPageRoute(builder: (context) {
-                   return FileUploader('/path/to/your/file');
+                   return AddFile();
 
                  }),);
                },
@@ -252,7 +252,7 @@ UserAccountsDrawerHeader(
                onPressed: (){
                  Navigator.push(
                    context, MaterialPageRoute(builder: (context) {
-                   return Video();
+                   return AddVideo();
                  }),);
                },
                splashColor: Colors.cyan,
