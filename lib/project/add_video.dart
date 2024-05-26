@@ -5,11 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+// الكلاس الرئيسي للواجهة
+
 class AddVideo extends StatefulWidget {
   @override
   State<AddVideo> createState() => _FileUploaderState();
 }
 
+//كلاس للمتغيرات المستخدمة
 class _FileUploaderState extends State<AddVideo> {
   Uint8List? _selectedFileBytes;
   String? _selectedFileName;
@@ -20,12 +23,14 @@ class _FileUploaderState extends State<AddVideo> {
   String? _selectedSubjectName;
   int? _selectedSubjectId;
 
+  // تحديث الواجهة
   @override
   void initState() {
     super.initState();
     _loadSubjects();
   }
 
+  // تابع جلب البيانات للقائمة المنسدلة
   Future<void> _loadSubjects() async {
     final prefs = await SharedPreferences.getInstance();
     final String? subjectsJson = prefs.getString('subjects');
@@ -38,6 +43,7 @@ class _FileUploaderState extends State<AddVideo> {
     }
   }
 
+  // تابع فظ id  للمادة التي تم اختيارها
   void _onSubjectSelected(String? selectedName) {
     final selectedSubject = _subjects.firstWhere((subject) => subject.subjectName == selectedName);
     setState(() {
@@ -46,6 +52,8 @@ class _FileUploaderState extends State<AddVideo> {
     });
   }
 
+
+  // تابع لاضافة الفيديو بالصيغ المختارة وحفظ اسمه وحجمه
   Future<void> _pickFile() async {
     try {
       final result = await FilePicker.platform.pickFiles(
@@ -67,13 +75,14 @@ class _FileUploaderState extends State<AddVideo> {
     }
   }
 
+
   Future<void> _uploadFile() async {
     if (_selectedFileBytes == null) return;
 
     setState(() {
       _isUploading = true;
     });
-
+// تعديل الرابط للفيديو بعد اختياره
     final uploadUrl = Uri.parse('http://example.com/upload');
 
     try {
@@ -154,23 +163,6 @@ class _FileUploaderState extends State<AddVideo> {
                       'لم يتم اختيار أي فيديو',
                       style: TextStyle(fontSize: 16, color: Colors.red),
                     ),
-                    SizedBox(height: 20),
-                    _isUploading
-                        ? CircularProgressIndicator()
-                        : ElevatedButton(
-                      onPressed: _uploadFile,
-                      child: Text('رفع الفيديو'),
-                    ),
-                    SizedBox(height: 20),
-                    _uploadMessage.isNotEmpty
-                        ? Text(
-                      _uploadMessage,
-                      style: TextStyle(
-                        color: _uploadMessage.contains('نجاح') ? Colors.green : Colors.red,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    )
-                        : SizedBox.shrink(),
                     SizedBox(height: 30),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -195,6 +187,23 @@ class _FileUploaderState extends State<AddVideo> {
                         'المادة: $_selectedSubjectName',
                         style: TextStyle(fontSize: 18),
                       ),
+                      SizedBox(height: 20),
+                      _isUploading
+                          ? CircularProgressIndicator()
+                          : ElevatedButton(
+                        onPressed: _uploadFile,
+                        child: Text('رفع الفيديو'),
+                      ),
+                      SizedBox(height: 20),
+                      _uploadMessage.isNotEmpty
+                          ? Text(
+                        _uploadMessage,
+                        style: TextStyle(
+                          color: _uploadMessage.contains('نجاح') ? Colors.green : Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )
+                          : SizedBox.shrink(),
                     ],
                   ],
                 ),
@@ -207,6 +216,7 @@ class _FileUploaderState extends State<AddVideo> {
   }
 }
 
+// كلاس للمتغيرات لاستخدامها وحفظها
 class Subject {
   final int id;
   final String subjectName;

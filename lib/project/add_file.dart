@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+// الكلاس الرئيسي للواجهة
 class AddFile extends StatefulWidget {
   @override
   State<AddFile> createState() => _FileUploaderState();
 }
 
+// كلاس للمتغيرات المستخدمة
 class _FileUploaderState extends State<AddFile> {
   Uint8List? _selectedFileBytes;
   String? _selectedFileName;
@@ -26,6 +28,8 @@ class _FileUploaderState extends State<AddFile> {
     _loadSubjects();
   }
 
+  // تابع جلب البيانات للقائمة المنسدلة
+
   Future<void> _loadSubjects() async {
     final prefs = await SharedPreferences.getInstance();
     final String? subjectsJson = prefs.getString('subjects');
@@ -37,6 +41,9 @@ class _FileUploaderState extends State<AddFile> {
       });
     }
   }
+
+
+  // تابع فظ id  للمادة التي تم اختيارها
 
   void _onSubjectSelected(String? selectedName) {
     final selectedSubject = _subjects.firstWhere((subject) => subject.subjectName == selectedName);
@@ -66,6 +73,7 @@ class _FileUploaderState extends State<AddFile> {
       print('Error picking file: $e'); // Debug print
     }
   }
+
 
   Future<void> _uploadFile() async {
     if (_selectedFileBytes == null) return;
@@ -154,23 +162,7 @@ class _FileUploaderState extends State<AddFile> {
                       'لم يتم اختيار أي ملف',
                       style: TextStyle(fontSize: 16, color: Colors.red),
                     ),
-                    SizedBox(height: 20),
-                    _isUploading
-                        ? CircularProgressIndicator()
-                        : ElevatedButton(
-                      onPressed: _uploadFile,
-                      child: Text('رفع الملف'),
-                    ),
-                    SizedBox(height: 20),
-                    _uploadMessage.isNotEmpty
-                        ? Text(
-                      _uploadMessage,
-                      style: TextStyle(
-                        color: _uploadMessage.contains('نجاح') ? Colors.green : Colors.red,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    )
-                        : SizedBox.shrink(),
+
                     SizedBox(height: 30),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -195,6 +187,22 @@ class _FileUploaderState extends State<AddFile> {
                         'المادة: $_selectedSubjectName',
                         style: TextStyle(fontSize: 18),
                       ),
+                      _isUploading
+                          ? CircularProgressIndicator()
+                          : ElevatedButton(
+                        onPressed: _uploadFile,
+                        child: Text('رفع الملف'),
+                      ),
+                      SizedBox(height: 20),
+                      _uploadMessage.isNotEmpty
+                          ? Text(
+                        _uploadMessage,
+                        style: TextStyle(
+                          color: _uploadMessage.contains('نجاح') ? Colors.green : Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )
+                          : SizedBox.shrink(),
                     ],
                   ],
                 ),

@@ -109,7 +109,7 @@ class _TeachersState extends State<Teachers> {
                       ),
                       SizedBox(width: 150,),
                       Text(
-                        'الخبرة : ${teacher.teachingDuration}  سنوات ',
+                        'الخبرة : ${teacher.teachingDuration}  سنة ',
                         style: TextStyle(fontSize: 16.0),
                       ),
                     ],
