@@ -39,27 +39,29 @@ class AdminState extends State<Signin> {
 
 
 // معالجة الاخطاء
+    // في تابع signin()
     try {
       final response = await http.post(url, headers: headers, body: json.encode(body));
       if (response.statusCode == 200) {
         final responseBody = json.decode(response.body);
         print('تم تسجيل الدخول بنجاح: ${response.body}');
-        // انشاء متغير لحفظ التوكين فيه عند النجاح
         final token = json.decode(response.body)['access_token'];
         await saveToken(token);
-        {Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context){return Login();}));}
+        await saveLoginState(true); // تحديث حالة تسجيل الدخول
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(responseBody['message'])),);
-      } else if ( response.statusCode != 200) {
+          SnackBar(content: Text(responseBody['message'])),
+        );
+        // بعد تحديث حالة تسجيل الدخول، قم بتوجيه المستخدم إلى الصفحة التالية
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Login()));
+      } else if (response.statusCode != 200) {
         print('حدث خطأ: ${response.body}');
         showResponseDialog(json.decode(response.body)['message']);
-
       }
     } catch (e) {
       showResponseDialog('خطأ في الاتصال');
-
       print('حدث خطأ في الاتصال: $e');
     }
+
 
 
     // تابع الاحتفاظ بالتوكين ومشاركته
@@ -89,7 +91,26 @@ class AdminState extends State<Signin> {
     );
   }
 
-@override
+  @override
+  void initState() {
+    super.initState();
+    checkLoginStatus(); // التحقق من حالة تسجيل الدخول عند فتح التطبيق
+  }
+
+  void checkLoginStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+    if (isLoggedIn) {
+      // توجيه المستخدم إلى شاشة الرئيسية بدون عرض شاشة تسجيل الدخول
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Login()));
+    }
+  }
+
+  Future<void> saveLoginState(bool isLoggedIn) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedIn', isLoggedIn);
+  }
+
 
   Widget build(BuildContext context) {
     return Scaffold(

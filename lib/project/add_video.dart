@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
@@ -5,14 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-// الكلاس الرئيسي للواجهة
+import 'home.dart';
 
+// الكلاس الرئيسي للواجهة
 class AddVideo extends StatefulWidget {
   @override
   State<AddVideo> createState() => _FileUploaderState();
 }
 
-//كلاس للمتغيرات المستخدمة
+// كلاس للمتغيرات المستخدمة
 class _FileUploaderState extends State<AddVideo> {
   Uint8List? _selectedFileBytes;
   String? _selectedFileName;
@@ -22,8 +24,8 @@ class _FileUploaderState extends State<AddVideo> {
   List<Subject> _subjects = [];
   String? _selectedSubjectName;
   int? _selectedSubjectId;
+  TextEditingController _videoNameController = TextEditingController(); // متغير لإدارة حقل النص
 
-  // تحديث الواجهة
   @override
   void initState() {
     super.initState();
@@ -43,7 +45,7 @@ class _FileUploaderState extends State<AddVideo> {
     }
   }
 
-  // تابع فظ id  للمادة التي تم اختيارها
+  // تابع فظ id للمادة التي تم اختيارها
   void _onSubjectSelected(String? selectedName) {
     final selectedSubject = _subjects.firstWhere((subject) => subject.subjectName == selectedName);
     setState(() {
@@ -51,7 +53,6 @@ class _FileUploaderState extends State<AddVideo> {
       _selectedSubjectId = selectedSubject.id;
     });
   }
-
 
   // تابع لاضافة الفيديو بالصيغ المختارة وحفظ اسمه وحجمه
   Future<void> _pickFile() async {
@@ -75,29 +76,39 @@ class _FileUploaderState extends State<AddVideo> {
     }
   }
 
-
   Future<void> _uploadFile() async {
-    if (_selectedFileBytes == null) return;
+    if (_selectedFileBytes == null || _selectedSubjectId == null || _videoNameController.text.isEmpty) return;
 
     setState(() {
       _isUploading = true;
     });
-// تعديل الرابط للفيديو بعد اختياره
-    final uploadUrl = Uri.parse('http://example.com/upload');
+
+    final uploadUrl = Uri.parse('http://127.0.0.1:8000/api/insertVideo/$_selectedSubjectId');
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('access_token') ?? '';
 
     try {
       var request = http.MultipartRequest('POST', uploadUrl)
+        ..headers['Authorization'] = 'Bearer $token'
+        ..fields['video_name'] = _videoNameController.text // استخدام اسم الفيديو المدخل من قبل المستخدم
         ..files.add(http.MultipartFile.fromBytes(
-          'file',
+          'video_file',
           _selectedFileBytes!,
           filename: _selectedFileName,
         ));
+
       var response = await request.send();
 
       if (response.statusCode == 200) {
         setState(() {
           _uploadMessage = 'تم رفع الفيديو بنجاح';
         });
+        Timer(Duration(seconds: 2), () {
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Login()));
+        });
+
+        showResponseDialog('الرجاء الانتظار لحظة');
+
       } else {
         setState(() {
           _uploadMessage = 'فشل رفع الفيديو';
@@ -112,6 +123,21 @@ class _FileUploaderState extends State<AddVideo> {
         _isUploading = false;
       });
     }
+  }
+
+  void showResponseDialog(String responseMessage) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(''),
+          content: Text(responseMessage),
+          actions: [
+            Text(''),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -162,6 +188,14 @@ class _FileUploaderState extends State<AddVideo> {
                         : Text(
                       'لم يتم اختيار أي فيديو',
                       style: TextStyle(fontSize: 16, color: Colors.red),
+                    ),
+                    SizedBox(height: 20),
+                    TextField(
+                      controller: _videoNameController, // ربط حقل النص بالمتغير
+                      decoration: InputDecoration(
+                        labelText: 'اسم الفيديو',
+                        border: OutlineInputBorder(),
+                      ),
                     ),
                     SizedBox(height: 30),
                     Row(

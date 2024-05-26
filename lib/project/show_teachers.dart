@@ -42,6 +42,7 @@ class Teachers extends StatefulWidget{
 }
 
 class _TeachersState extends State<Teachers> {
+
   List<Teacher> teachers = [];
   Future<String> getToken() async {
     final prefs = await SharedPreferences.getInstance();
@@ -49,6 +50,9 @@ class _TeachersState extends State<Teachers> {
   }
 
   Future<void> fetchTeachers() async {
+    setState(() {
+    });
+
     var token = await getToken();
 
     final response = await http.get(
@@ -68,7 +72,26 @@ class _TeachersState extends State<Teachers> {
       // Handle the error
     }
   }
+  Future<void> deleteTeacher(int id) async {
+    var token = await getToken();
 
+    final response = await http.delete(
+      Uri.parse('http://127.0.0.1:8000/api/deleteTeacher/admin/$id'),
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": "Bearer $token",
+      },
+    );
+
+    if (response.statusCode == 200) {
+      setState(() {
+        teachers.removeWhere((teacher) => teacher.id == id);
+      });
+    } else {
+      // Handle the error
+    }
+  }
 
 
   @override
@@ -134,7 +157,9 @@ class _TeachersState extends State<Teachers> {
                   SizedBox(height: 8.0),
 
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      deleteTeacher(teacher.id);
+                    },
                     icon: Icon(
                       Icons.delete,
                       size: 25,

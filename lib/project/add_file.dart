@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:untitled34/project/home.dart';
+import 'package:untitled34/project/signin.dart';
 
 // الكلاس الرئيسي للواجهة
 class AddFile extends StatefulWidget {
@@ -21,15 +24,16 @@ class _FileUploaderState extends State<AddFile> {
   List<Subject> _subjects = [];
   String? _selectedSubjectName;
   int? _selectedSubjectId;
+  TextEditingController _fileNameController = TextEditingController(); // متغير لإدارة حقل النص
 
   @override
   void initState() {
     super.initState();
     _loadSubjects();
+
   }
 
   // تابع جلب البيانات للقائمة المنسدلة
-
   Future<void> _loadSubjects() async {
     final prefs = await SharedPreferences.getInstance();
     final String? subjectsJson = prefs.getString('subjects');
@@ -42,9 +46,7 @@ class _FileUploaderState extends State<AddFile> {
     }
   }
 
-
   // تابع فظ id  للمادة التي تم اختيارها
-
   void _onSubjectSelected(String? selectedName) {
     final selectedSubject = _subjects.firstWhere((subject) => subject.subjectName == selectedName);
     setState(() {
@@ -74,29 +76,38 @@ class _FileUploaderState extends State<AddFile> {
     }
   }
 
-
   Future<void> _uploadFile() async {
-    if (_selectedFileBytes == null) return;
+    if (_selectedFileBytes == null || _selectedSubjectId == null || _fileNameController.text.isEmpty) return;
 
     setState(() {
       _isUploading = true;
     });
 
-    final uploadUrl = Uri.parse('http://example.com/upload');
+    final uploadUrl = Uri.parse('http://127.0.0.1:8000/api/storePdf/$_selectedSubjectId');
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('access_token') ?? '';
 
     try {
       var request = http.MultipartRequest('POST', uploadUrl)
+        ..headers['Authorization'] = 'Bearer $token'
+        ..fields['file_name'] = _fileNameController.text // استخدام اسم الملف المدخل من قبل المستخدم
         ..files.add(http.MultipartFile.fromBytes(
           'file',
           _selectedFileBytes!,
           filename: _selectedFileName,
         ));
+
       var response = await request.send();
 
       if (response.statusCode == 200) {
         setState(() {
           _uploadMessage = 'تم رفع الملف بنجاح';
         });
+        Timer(Duration(seconds: 2), () {
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Login()));
+        });
+        showResponseDialog('الرجاء الانتظار لحظة');
+
       } else {
         setState(() {
           _uploadMessage = 'فشل رفع الملف';
@@ -111,6 +122,22 @@ class _FileUploaderState extends State<AddFile> {
         _isUploading = false;
       });
     }
+  }
+
+
+  void showResponseDialog(String responseMessage) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(''),
+          content: Text(responseMessage),
+          actions: [
+            Text(''),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -162,7 +189,14 @@ class _FileUploaderState extends State<AddFile> {
                       'لم يتم اختيار أي ملف',
                       style: TextStyle(fontSize: 16, color: Colors.red),
                     ),
-
+                    SizedBox(height: 20),
+                    TextField(
+                      controller: _fileNameController, // ربط حقل النص بالمتغير
+                      decoration: InputDecoration(
+                        labelText: 'اسم الملف',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
                     SizedBox(height: 30),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
