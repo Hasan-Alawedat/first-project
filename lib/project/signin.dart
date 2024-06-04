@@ -47,7 +47,6 @@ class AdminState extends State<Signin> {
         print('تم تسجيل الدخول بنجاح: ${response.body}');
         final token = json.decode(response.body)['access_token'];
         await saveToken(token);
-        await saveLoginState(true); // تحديث حالة تسجيل الدخول
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(responseBody['message'])),
         );
@@ -94,22 +93,8 @@ class AdminState extends State<Signin> {
   @override
   void initState() {
     super.initState();
-    checkLoginStatus(); // التحقق من حالة تسجيل الدخول عند فتح التطبيق
   }
 
-  void checkLoginStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-    if (isLoggedIn) {
-      // توجيه المستخدم إلى شاشة الرئيسية بدون عرض شاشة تسجيل الدخول
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Login()));
-    }
-  }
-
-  Future<void> saveLoginState(bool isLoggedIn) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isLoggedIn', isLoggedIn);
-  }
 
 
   Widget build(BuildContext context) {

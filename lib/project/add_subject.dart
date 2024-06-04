@@ -45,7 +45,7 @@ class _SubjectScreenState extends State<AddSubjest> {
           SnackBar(content: Text(responseBody['messge'])),
         );
 
-          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context){return Login();}));
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context){return Login();}));
 
       }
       else {

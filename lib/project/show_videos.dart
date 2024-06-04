@@ -6,6 +6,10 @@ import 'package:video_player/video_player.dart'; // استيراد حزمة مش
 
 // الكلاس الرئيسي للواجهة
 class VideoList extends StatefulWidget {
+  final int subjectId;
+
+  VideoList({required this.subjectId});
+
   @override
   _VideoListState createState() => _VideoListState();
 }
@@ -22,20 +26,43 @@ class _VideoListState extends State<VideoList> {
     _fetchVideos();
   }
 
+  Future<void> _saveToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('access_token', token);
+  }
+
+  Future<String?> _getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('access_token');
+  }
+
   Future<void> _fetchVideos() async {
     setState(() {
       _isLoading = true;
     });
 
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('access_token') ?? '';
-    final url = Uri.parse('http://127.0.0.1:8000/api/getVideos/admin/1');
+    final token = await _getToken();
+
+    // تأكد من استرجاع الرمز بشكل صحيح
+    if (token == null || token.isEmpty) {
+      setState(() {
+        _isLoading = false;
+        _message = 'Error: Access token is null or empty';
+      });
+      print('Error: Access token is null or empty');
+      return;
+    }
+
+    print('Access token: $token'); // نقطة تصحيح
+
+    final url = Uri.parse('http://127.0.0.1:8000/api/getVideos/admin/${widget.subjectId}');
 
     try {
       final response = await http.get(
         url,
         headers: {
           'Authorization': 'Bearer $token',
+          'Accept': 'application/json', // تأكد من إضافة مفتاح Accept
         },
       );
 
@@ -55,13 +82,70 @@ class _VideoListState extends State<VideoList> {
         }
       } else {
         setState(() {
-          _message = 'Failed to retrieve videos. Status code: ${response.statusCode}';
+          _message = 'لا يوجد فيديوهات';
         });
       }
     } catch (e) {
       setState(() {
         _message = 'Error fetching videos: $e';
       });
+      print('Error fetching videos: $e'); // نقطة تصحيح
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _deleteVideo(int id) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final token = await _getToken();
+
+    if (token == null || token.isEmpty) {
+      setState(() {
+        _isLoading = false;
+        _message = 'Error: Access token is null or empty';
+      });
+      print('Error: Access token is null or empty');
+      return;
+    }
+
+    final url = Uri.parse('http://127.0.0.1:8000/api/deleteVideo/$id');
+
+    try {
+      final response = await http.delete(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json', // تأكد من إضافة مفتاح Accept
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final jsonResponse = json.decode(response.body);
+        if (jsonResponse['status'] == true) {
+          setState(() {
+            _videos.removeWhere((video) => video.id == id);
+            _message = jsonResponse['message'];
+          });
+        } else {
+          setState(() {
+            _message = 'Failed to delete video.';
+          });
+        }
+      } else {
+        setState(() {
+          _message = 'Failed to delete video. Status code: ${response.statusCode}';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _message = 'Error deleting video: $e';
+      });
+      print('Error deleting video: $e'); // نقطة تصحيح
     } finally {
       setState(() {
         _isLoading = false;
@@ -74,9 +158,6 @@ class _VideoListState extends State<VideoList> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBar(
-          title: Text('Video List'),
-        ),
         body: _isLoading
             ? Center(child: CircularProgressIndicator())
             : _videos.isNotEmpty
@@ -85,20 +166,32 @@ class _VideoListState extends State<VideoList> {
           itemCount: _videos.length,
           itemBuilder: (context, index) {
             final video = _videos[index];
-            return Card(
-              child: ListTile(
-                title: Text(video.name),
-                subtitle: Text(video.url),
-                trailing: IconButton(
-                  icon: Icon(Icons.play_arrow),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => VideoPlayerScreen(videoUrl: video.url),
+            return Container(
+              child: Card(
+                child: Column(
+                  children: [
+                    ListTile(
+                      title: Text(video.name),
+                      subtitle: Text(video.url),
+                      trailing: IconButton(
+                        icon: Icon(Icons.play_arrow),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => VideoPlayerScreen(videoUrl: video.url), // استخدم الـ url
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.delete),
+                      onPressed: () {
+                        _deleteVideo(video.id);
+                      },
+                    ),
+                  ],
                 ),
               ),
             );

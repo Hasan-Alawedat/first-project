@@ -5,6 +5,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 class PdfList extends StatefulWidget {
+  final int subjectId;
+
+  PdfList({required this.subjectId});
+
   @override
   _PdfListState createState() => _PdfListState();
 }
@@ -27,7 +31,7 @@ class _PdfListState extends State<PdfList> {
 
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('access_token') ?? '';
-    final url = Uri.parse('http://127.0.0.1:8000/api/retrivePdf/admin/1');
+    final url = Uri.parse('http://127.0.0.1:8000/api/retrivePdf/admin/${widget.subjectId}');
 
     try {
       final response = await http.get(
@@ -72,9 +76,6 @@ class _PdfListState extends State<PdfList> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBar(
-          title: Text('PDF List'),
-        ),
         body: _isLoading
             ? Center(child: CircularProgressIndicator())
             : _pdfs.isNotEmpty

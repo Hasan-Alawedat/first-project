@@ -119,69 +119,70 @@ class _AnotherScreenState extends State<AddTeacher> {
                 style: TextStyle(fontSize: 18),
               ),
               SizedBox(height: 20),
-              Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    TextFormField(
-                      controller: _firstNameController,
-                      decoration: InputDecoration(labelText: 'الأسم '),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'الرجاء ادخال اسم';
-                        }
-                        return null;
-                      },
-                    ),
-                    TextFormField(
-                      controller: _lastNameController,
-                      decoration: InputDecoration(labelText: 'الكنية'),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'الرجاء ادخال الكنية';
-                        }
-                        return null;
-                      },
-                    ),
-                    TextFormField(
-                      controller: _descriptionController,
-                      decoration: InputDecoration(labelText: 'معلومات عن المعلم'),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'الرجاء ادخال معلومات ';
-                        }
-                        return null;
-                      },
-                    ),
-                    TextFormField(
-                      controller: _phoneNoController,
-                      decoration: InputDecoration(labelText: 'رقم الهاتف'),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'الرجاء ادخال رقم';
-                        }
-                        return null;
-                      },
-                    ),
-                    TextFormField(
-                      controller: _teachingDurationController,
-                      decoration: InputDecoration(labelText: 'مدة التدريس'),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return '  الرجاء ادخال مدة بالارقام';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: submitForm,
-                      child: Text('اضافة العلومات'),
-                    ),
-                  ],
-                ),
-              ),
             ],
+            Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: _firstNameController,
+                    decoration: InputDecoration(labelText: 'الأسم '),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'الرجاء ادخال اسم';
+                      }
+                      return null;
+                    },
+                  ),
+                  TextFormField(
+                    controller: _lastNameController,
+                    decoration: InputDecoration(labelText: 'الكنية'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'الرجاء ادخال الكنية';
+                      }
+                      return null;
+                    },
+                  ),
+                  TextFormField(
+                    controller: _descriptionController,
+                    decoration: InputDecoration(labelText: 'معلومات عن المعلم'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'الرجاء ادخال معلومات ';
+                      }
+                      return null;
+                    },
+                  ),
+                  TextFormField(
+                    controller: _phoneNoController,
+                    decoration: InputDecoration(labelText: 'رقم الهاتف'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'الرجاء ادخال رقم';
+                      }
+                      return null;
+                    },
+                  ),
+                  TextFormField(
+                    controller: _teachingDurationController,
+                    decoration: InputDecoration(labelText: 'مدة التدريس'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return '  الرجاء ادخال مدة بالارقام';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: submitForm,
+                    child: Text('اضافة العلومات'),
+                  ),
+                ],
+              ),
+            ),
+
           ],
         ),
       ),

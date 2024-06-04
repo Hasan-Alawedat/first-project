@@ -2,9 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:untitled34/project/show_subject_fields.dart';
 
-
-// كلاس للمتغيرات التي اريد حفظها
 class Subject {
   final int id;
   final String subjectName;
@@ -22,7 +21,6 @@ class Subject {
   };
 }
 
-// الكلاس الرئيسي
 class SubjectsScreen extends StatefulWidget {
   @override
   _SubjectsScreenState createState() => _SubjectsScreenState();
@@ -37,7 +35,6 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
     _fetchSubjects();
   }
 
-  // تابع api
   Future<void> _fetchSubjects() async {
     final token = await _getToken();
     final response = await http.get(
@@ -49,25 +46,25 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
       },
     );
     if (response.statusCode == 200) {
-      final List<dynamic> subjectsJson = json.decode(response.body)['Subjects'];
+      final responseBody = json.decode(response.body);
+      print(responseBody); // طباعة الرد في وحدة التحكم
+      final List<dynamic> subjectsJson = responseBody['Subjects'];
       setState(() {
         _subjects = subjectsJson.map((json) => Subject.fromJson(json)).toList();
       });
-      await _saveSubjects(_subjects); // Save all subjects to SharedPreferences
+      await _saveSubjects(_subjects);
     } else {
       showResponseDialog('حدث خطأ في تحميل البيانات');
-      print('Failed to load subjects');
+      print('Failed to load subjects: ${response.statusCode}');
+      print('Response body: ${response.body}');
     }
   }
 
-  // تابع جلب التوكين
   Future<String> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('access_token') ?? '';
   }
 
-
-  // تابع حذف المادة
   Future<void> deleteSubject(int id) async {
     final token = await _getToken();
     final response = await http.delete(
@@ -88,7 +85,7 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(responseBody['message'])),
         );
-        await _saveSubjects(_subjects); // Update saved subjects after deletion
+        await _saveSubjects(_subjects);
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -97,16 +94,12 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
     }
   }
 
-
-  // تابع حفظ المواد بعد الاضافة او الحذف
   Future<void> _saveSubjects(List<Subject> subjects) async {
     final prefs = await SharedPreferences.getInstance();
     final String subjectsJson = jsonEncode(subjects.map((subject) => subject.toJson()).toList());
     await prefs.setString('subjects', subjectsJson);
   }
 
-
-  // تابع رسالة الخطأ
   void showResponseDialog(String responseMessage) {
     showDialog(
       context: context,
@@ -136,7 +129,12 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
           final subject = _subjects[index];
           return GestureDetector(
             onTap: () {
-              // Optional: Handle tap event if needed
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SubjectDetailsScreen(subjectId: subject.id),
+                ),
+              );
             },
             child: Card(
               elevation: 4.0,
@@ -173,7 +171,14 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
                         ),
                         SizedBox(width: 100),
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SubjectDetailsScreen(subjectId: subject.id),
+                              ),
+                            );
+                          },
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
                             backgroundColor: Colors.blue,

@@ -1,10 +1,7 @@
 import 'dart:convert';
-import 'dart:html';
 import 'package:http/http.dart' as http;
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:untitled34/project/register_admin.dart';
 import 'package:untitled34/project/add_video.dart';
@@ -13,10 +10,10 @@ import 'package:untitled34/project/add_teacher.dart';
 import 'package:untitled34/project/show_files.dart';
 import 'package:untitled34/project/show_subjects.dart';
 import 'package:untitled34/project/show_teachers.dart';
-import 'package:untitled34/project/show_videos.dart';
 import 'package:untitled34/project/signin.dart';
 import 'package:untitled34/project/add_subject.dart';
-
+import 'add_book.dart';
+import 'add_photo.dart';
 class Login extends StatefulWidget {
 
   Login();
@@ -59,167 +56,37 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
 
-    final isDesktop = MediaQuery.of(context).size.width >= 600;
     return Scaffold(
-
-      appBar: AppBar(
-        backgroundColor: Colors.black12,
-        title: Row(
+      body: ListView(children: [
+        Row(
+mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            isDesktop
-                ? Container(
-                    child: Row(
-                      children: [
-                        Container(
-                          child: Row(
-                            children: [
-                              Text(
-                                "A",
-                                style: TextStyle(color: Colors.red, fontSize: 35,fontWeight: FontWeight.w900),
-                              ),
-                              Text(
-                                "O",
-                                style: TextStyle(color: Colors.purple, fontSize: 35,fontWeight: FontWeight.w900),
-                              ),
-                              Text(
-                                "T",
-                                style: TextStyle(color: Colors.green, fontSize: 35,fontWeight: FontWeight.w900),
-                              ),
-                              Text(
-                                "H",
-                                style: TextStyle(color: Colors.yellow, fontSize: 35,fontWeight: FontWeight.w900),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                      ],
-                    ),
-                  )
-                : Container(),
-            Expanded(child: Text("")),
-            Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25),
-                  child: Container( decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12)),
-                  width: 200,
-                  height: 25,
-                  child: TextField(
-                    decoration: InputDecoration(
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25),
+              child: Container( decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(12)),
+                width: 200,
+                height: 25,
+                child: TextField(
+                  decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: "  بحث",
                       hintStyle: TextStyle(color: Colors.black),
                       prefixIcon: Icon(Icons.search,color: Colors.black,)
-                    ),
-                  ),),
-                )
-              ],
-            ),
-            Expanded(child: Text("")),
-            Container(
-              child: Row(
-                children: [
-                  Container(
-                    color: Color(0xff3379Bf),
-                    width: 3,
-                    height: 25,
-                    margin: EdgeInsets.symmetric(horizontal: 30),
                   ),
-                  Row(
-                    children: [
-                      IconButton(
-                          onPressed: () {},
-                          icon: Icon(
-                            Icons.notifications,
-                            size: 25,
-                            color: Colors.black,
-                          )),
-
-                    ],
-                  ),
-                ],
-              ),
+                ),),
             ),
+            IconButton(
+                onPressed: () {},
+                icon: Icon(
+                  Icons.notifications,
+                  size: 30,
+                  color: Colors.blue,
+                )),
+            Text("     "),
           ],
         ),
-      ),
-      endDrawer:
-
-      Drawer(
-        backgroundColor: Colors.white,
-
-        child: Column(children: [
-UserAccountsDrawerHeader(
-    decoration: BoxDecoration(color: Colors.black38),
-    accountName: Center(child: Text(" الاعدادات ",style: TextStyle(fontSize: 31,fontWeight: FontWeight.w900),)), accountEmail: Text("")),
-
-          ListTile(
-            title: Text("   الاشعارات"),
-            leading: Switch(value:notify , onChanged: (val){
-              setState(() {
-                notify = val;
-              });
-
-            }),
-            onTap: (){},
-          ), ListTile(
-            title: Text("   الوضع المظلم"),
-            leading: Switch(value:night , onChanged: (val){
-              setState(() {
-                night = val;
-              });
-
-            }),
-            onTap: (){},
-          ),
-          ListTile(
-            title: Text(" كلمة السر"),
-            leading: Icon(Icons.lock_open_outlined,color: Colors.deepPurple,),
-            onTap: (){},
-          ),
-          ListTile(
-            title: Text(" اللغة"),
-            leading: Icon(Icons.language,color: Colors.deepPurple,),
-            onTap: (){},
-          ),
-
-          ListTile(
-            title: Text(" تواصل معنا"),
-            leading: Icon(Icons.phone,color: Colors.deepPurple,),
-            onTap: (){
-              showDialog(context: context, builder: (context){
-                return AlertDialog(
-                  title: Text("رقم المطور "),
-                  content: Text("+(963)997 119 361"),
-                  actions: [ TextButton(onPressed: (){Navigator.of(context).pop();}, child: Text("حسنا")),
-
-                  ],
-                );
-              });
-            },
-          ),
-          ListTile(
-            title: Text(" مركز المساعدة"),
-            leading: Icon(Icons.help_outline,color: Colors.deepPurple,),
-            onTap: (){
-              showDialog(context: context, builder: (context){
-                return AlertDialog(
-                  title: Text("علاوي حبيب قلبي "),
-                  content: Text("ربك بساعد الجميع"),
-                  actions: [ TextButton(onPressed: (){Navigator.of(context).pop();}, child: Text("حسنا")),
-
-                  ],
-                );
-              });
-            },
-          ),
-        ],),
-      ),
-
-      body: ListView(children: [
        Row(children: [
          Expanded(
            child: Padding(
@@ -244,6 +111,7 @@ UserAccountsDrawerHeader(
                            children: [
 
                              SizedBox(width: 200,),
+                             // معلمين
                              ElevatedButton(
                                style: ElevatedButton.styleFrom(
                                  backgroundColor: Colors.white,),
@@ -270,7 +138,7 @@ UserAccountsDrawerHeader(
                              ),
 
                              SizedBox(width: 100,),
-
+                             // مواد
                              ElevatedButton(
                                style: ElevatedButton.styleFrom(
                                  backgroundColor: Colors.white,),
@@ -303,69 +171,6 @@ UserAccountsDrawerHeader(
                              ElevatedButton(
                                style: ElevatedButton.styleFrom(
                                  backgroundColor: Colors.white,),
-                               onPressed: (){
-                                 Navigator.push(
-                                   context, MaterialPageRoute(builder: (context) {
-                                   return VideoList();
-                                 }),);
-                               },
-                               child:  Container( decoration: BoxDecoration(
-                               ),
-                                   width: 200,
-                                   height: 200,
-                                   child:
-                                   Column(
-                                     mainAxisAlignment: MainAxisAlignment.center,
-                                     children: [
-                                       Icon(Icons.ondemand_video,color: Colors.blue,),
-
-                                       Text("الفيديوهات",style: TextStyle(color: Colors.black,fontSize: 18,fontWeight: FontWeight.w800),)
-                                     ],
-                                   )
-                               ),
-                             ),
-                           ],
-                         ),
-
-                         SizedBox(height: 100,),
-
-                         Row(
-                           mainAxisAlignment: MainAxisAlignment.center,
-                           children: [
-                             SizedBox(width: 200,),
-
-                             ElevatedButton(
-                               style: ElevatedButton.styleFrom(
-                                 backgroundColor: Colors.white,),
-                               onPressed: (){
-                                 Navigator.push(
-                                   context, MaterialPageRoute(builder: (context) {
-                                   return PdfList();
-                                 }),);
-                               },
-                               child:  Container( decoration: BoxDecoration(
-                               ),
-                                   width: 200,
-                                   height: 200,
-                                   child:
-                                   Column(
-                                     mainAxisAlignment: MainAxisAlignment.center,
-
-                                     children: [
-                                       Icon(Icons.menu_book_outlined,color: Colors.red,),
-
-                                       Text("الملفات",style: TextStyle(color: Colors.black,fontSize: 18,fontWeight: FontWeight.w800),)
-                                     ],
-                                   )
-                               ),
-
-                             ),
-
-                             SizedBox(width: 100,),
-
-                             ElevatedButton(
-                               style: ElevatedButton.styleFrom(
-                                 backgroundColor: Colors.white,),
                                onPressed: (){},
                                child:  Container( decoration: BoxDecoration(
                                ),
@@ -384,29 +189,12 @@ UserAccountsDrawerHeader(
                                ),
                              ),
 
-                             SizedBox(width: 100,),
 
-                             ElevatedButton(
-                               style: ElevatedButton.styleFrom(
-                                 backgroundColor: Colors.white,),
-                               onPressed: (){},
-                               child: Container( decoration: BoxDecoration(
-                               ),
-                                   width: 200,
-                                   height: 200,
-                                   child:
-                                   Column(
-                                     mainAxisAlignment: MainAxisAlignment.center,
-                                     children: [
-                                       Icon(Icons.notification_important_outlined,color: Colors.green,),
-
-                                       Text("  الاشعارات المرسلة",style: TextStyle(color: Colors.black,fontSize: 18,fontWeight: FontWeight.w800),)
-                                     ],
-                                   )
-                               ),
-                             ),
                            ],
                          ),
+
+                         SizedBox(height: 100,),
+
 
                        ],
                      ),
@@ -417,6 +205,7 @@ UserAccountsDrawerHeader(
              ),
            ),
          ),
+
          Padding(
            padding: const EdgeInsets.symmetric(horizontal: 1),
            child: Container( decoration: BoxDecoration(
@@ -427,7 +216,7 @@ UserAccountsDrawerHeader(
              child:
            Column(children: [
 
-             SizedBox(height: 40,),
+             SizedBox(height: 20,),
              MaterialButton(
                onPressed: (){
                  Navigator.push(
@@ -450,7 +239,7 @@ UserAccountsDrawerHeader(
                        )
                ),
              ),
-             SizedBox(height: 20,),
+             SizedBox(height: 5,),
              MaterialButton(
                onPressed: (){
                  Navigator.push(
@@ -476,7 +265,60 @@ UserAccountsDrawerHeader(
 
 
              ),
-             SizedBox(height: 20,),
+             SizedBox(height: 5,),
+             MaterialButton(
+               onPressed: (){
+                 Navigator.push(
+                   context, MaterialPageRoute(builder: (context) {
+                   return AddImageScreen();
+
+                 }),);
+
+               },
+               splashColor: Colors.cyan,
+               child: Container( decoration: BoxDecoration(
+               ),
+                   width: 230,
+                   height: 60,
+                   child:
+                   Row(
+                     children: [
+                       SizedBox(width: 15,),
+                       Icon(Icons.image,color: Colors.purple,size: 40,),
+                       Text("   رفع صورة",style: TextStyle(color: Colors.black,fontSize: 18),),
+                     ],
+                   )
+               ),
+
+
+             ),
+             SizedBox(height: 5,),
+             MaterialButton(
+               onPressed: (){
+                 Navigator.push(
+                   context, MaterialPageRoute(builder: (context) {
+                   return AddBook();
+
+                 }),);
+               },
+               splashColor: Colors.cyan,
+               child: Container( decoration: BoxDecoration(
+               ),
+                   width: 230,
+                   height: 60,
+                   child:
+                   Row(
+                     children: [
+                       SizedBox(width: 15,),
+                       Icon(Icons.file_copy_sharp,color: Colors.amber,size: 40,),
+                       Text("   رفع كتاب",style: TextStyle(color: Colors.black,fontSize: 18),),
+                     ],
+                   )
+               ),
+
+
+             ),
+             SizedBox(height: 5,),
              MaterialButton(
                onPressed: (){
                  Navigator.push(
@@ -501,7 +343,7 @@ UserAccountsDrawerHeader(
 
 
              ),
-             SizedBox(height: 20,),
+             SizedBox(height: 5,),
              MaterialButton(
                onPressed: (){},
                splashColor: Colors.cyan,
@@ -521,7 +363,7 @@ UserAccountsDrawerHeader(
 
                ),
              ),
-             SizedBox(height: 20,),
+             SizedBox(height: 5,),
              MaterialButton(
                onPressed: (){
                  Navigator.push(
@@ -544,7 +386,7 @@ UserAccountsDrawerHeader(
                    )
                ),
              ),
-             SizedBox(height: 20,),
+             SizedBox(height: 5,),
              MaterialButton(
                onPressed: (){
                  Navigator.push(
@@ -567,7 +409,7 @@ UserAccountsDrawerHeader(
                    )
                ),
              ),
-           SizedBox(height: 100,),
+           SizedBox(height: 50,),
              TextButton(
                onPressed: (){
 
