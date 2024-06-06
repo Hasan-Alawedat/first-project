@@ -83,24 +83,129 @@ class _SubjectScreenState extends State<AddSubjest> {
 
   @override
   Widget build(BuildContext context) {
+    final isDesktop = MediaQuery.of(context).size.width >= 829;
+    final isDesk = MediaQuery.of(context).size.width >= 1470;
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: subController,
-              decoration: InputDecoration(labelText: 'اسم المادة'),
+      body: Column(
+        children: [
+          Row(
+
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              isDesk?Row(children: [
+                IconButton(
+                  icon: const Icon(
+                    Icons.person,color: Colors.blueGrey,
+                  ),onPressed: (){},),
+
+                SizedBox(width: 600,),
+              ],):Container(),
+
+              isDesktop?Row(children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
+                  child: Container( decoration: BoxDecoration(
+                      color: Colors.white54,
+                      borderRadius: BorderRadius.circular(12)),
+                    height: 40,
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.notification_important,color: Colors.blueGrey,
+                          ),onPressed: (){},),
+
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 50,vertical: 10),
+                  child: Container( decoration: BoxDecoration(
+                      color: Colors.white54,
+                      borderRadius: BorderRadius.circular(12)),
+                    height: 40,
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.forward_to_inbox,color: Colors.blueGrey,
+                          ),onPressed: (){
+
+                        },),
+
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
+                  child: Container( decoration: BoxDecoration(
+                      color: Colors.white54,
+                      borderRadius: BorderRadius.circular(12)),
+                    height: 40,
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.home,color: Colors.blueGrey,
+                          ),onPressed: (){
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(builder: (context) => Login()),
+                                (Route<dynamic> route) => false,
+                          );
+                        },),
+
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(width: 300,),
+
+              ],):Container(),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 7),
+                child: Container( decoration: BoxDecoration(
+                    color: Colors.black12,
+                    borderRadius: BorderRadius.circular(12)),
+                  width: 230,
+                  height: 40,
+                  child: TextField(
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: "                                       بحث  ",
+                      hoverColor: Colors.cyan,
+                      suffixIcon: IconButton(
+                        icon: const Icon(
+                          Icons.search_rounded,color: Colors.black12,
+                        ),onPressed: (){},),
+                    ),
+                  ),),
+              ),
+
+            ],
+          ),
+          Divider(color: Colors.black12,),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextField(
+                  controller: subController,
+                  decoration: InputDecoration(labelText: 'اسم المادة'),
+                ),
+                SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: postData,
+                  child: Text('إنشاء المادة'),
+                ),
+                SizedBox(height: 24),
+              ],
             ),
-            SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: postData,
-              child: Text('إنشاء المادة'),
-            ),
-            SizedBox(height: 24),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

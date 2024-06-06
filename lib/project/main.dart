@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:untitled34/project/add_teacher.dart';
+import 'package:untitled34/project/home2.dart';
 import 'package:untitled34/project/register_admin.dart';
+import 'package:untitled34/project/show_admins.dart';
 import 'package:untitled34/project/show_files.dart';
+import 'package:untitled34/project/show_profile.dart';
 import 'package:untitled34/project/show_subjects.dart';
 import 'package:untitled34/project/show_teachers.dart';
 import 'package:untitled34/project/show_videos.dart';
@@ -23,6 +26,7 @@ class MyWeb extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: WelcomeScreen(),
+      locale: Locale('ar'),
     );
   }
 }

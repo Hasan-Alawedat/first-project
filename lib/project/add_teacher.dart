@@ -94,97 +94,203 @@ class _AnotherScreenState extends State<AddTeacher> {
 
   @override
   Widget build(BuildContext context) {
+    final isDesktop = MediaQuery.of(context).size.width >= 829;
+    final isDesk = MediaQuery.of(context).size.width >= 1470;
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(50),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            DropdownButton<String>(
-              hint: Text('اختر المادة'),
-              value: _selectedSubjectName,
-              items: _subjects.map((subject) {
-                return DropdownMenuItem<String>(
-                  value: subject.subjectName,
-                  child: Text(subject.subjectName),
-                );
-              }).toList(),
-              onChanged: _onSubjectSelected,
-            ),
-            SizedBox(height: 20),
-            if (_selectedSubjectId != null) ...[
-              SizedBox(height: 8),
-              Text(
-                'المادة: $_selectedSubjectName',
-                style: TextStyle(fontSize: 18),
+      body: ListView(
+        children: [
+          Row(
+
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              isDesk?Row(children: [
+                IconButton(
+                  icon: const Icon(
+                    Icons.person,color: Colors.blueGrey,
+                  ),onPressed: (){},),
+
+                SizedBox(width: 600,),
+              ],):Container(),
+
+              isDesktop?Row(children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
+                  child: Container( decoration: BoxDecoration(
+                      color: Colors.white54,
+                      borderRadius: BorderRadius.circular(12)),
+                    height: 40,
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.notification_important,color: Colors.blueGrey,
+                          ),onPressed: (){},),
+
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 50,vertical: 10),
+                  child: Container( decoration: BoxDecoration(
+                      color: Colors.white54,
+                      borderRadius: BorderRadius.circular(12)),
+                    height: 40,
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.forward_to_inbox,color: Colors.blueGrey,
+                          ),onPressed: (){
+
+                        },),
+
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
+                  child: Container( decoration: BoxDecoration(
+                      color: Colors.white54,
+                      borderRadius: BorderRadius.circular(12)),
+                    height: 40,
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.home,color: Colors.blueGrey,
+                          ),onPressed: (){
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(builder: (context) => Login()),
+                                (Route<dynamic> route) => false,
+                          );
+                        },),
+
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(width: 300,),
+
+              ],):Container(),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 7),
+                child: Container( decoration: BoxDecoration(
+                    color: Colors.black12,
+                    borderRadius: BorderRadius.circular(12)),
+                  width: 230,
+                  height: 40,
+                  child: TextField(
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: "                                       بحث  ",
+                      hoverColor: Colors.cyan,
+                      suffixIcon: IconButton(
+                        icon: const Icon(
+                          Icons.search_rounded,color: Colors.black12,
+                        ),onPressed: (){},),
+                    ),
+                  ),),
               ),
-              SizedBox(height: 20),
+
             ],
-            Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  TextFormField(
-                    controller: _firstNameController,
-                    decoration: InputDecoration(labelText: 'الأسم '),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'الرجاء ادخال اسم';
-                      }
-                      return null;
-                    },
-                  ),
-                  TextFormField(
-                    controller: _lastNameController,
-                    decoration: InputDecoration(labelText: 'الكنية'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'الرجاء ادخال الكنية';
-                      }
-                      return null;
-                    },
-                  ),
-                  TextFormField(
-                    controller: _descriptionController,
-                    decoration: InputDecoration(labelText: 'معلومات عن المعلم'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'الرجاء ادخال معلومات ';
-                      }
-                      return null;
-                    },
-                  ),
-                  TextFormField(
-                    controller: _phoneNoController,
-                    decoration: InputDecoration(labelText: 'رقم الهاتف'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'الرجاء ادخال رقم';
-                      }
-                      return null;
-                    },
-                  ),
-                  TextFormField(
-                    controller: _teachingDurationController,
-                    decoration: InputDecoration(labelText: 'مدة التدريس'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return '  الرجاء ادخال مدة بالارقام';
-                      }
-                      return null;
-                    },
+          ),
+Divider(color: Colors.black12,),
+          Padding(
+            padding: const EdgeInsets.all(50),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                DropdownButton<String>(
+                  hint: Text('اختر المادة'),
+                  value: _selectedSubjectName,
+                  items: _subjects.map((subject) {
+                    return DropdownMenuItem<String>(
+                      value: subject.subjectName,
+                      child: Text(subject.subjectName,style: TextStyle(color: Colors.cyan),),
+                    );
+                  }).toList(),
+                  onChanged: _onSubjectSelected,
+                ),
+                SizedBox(height: 20),
+                if (_selectedSubjectId != null) ...[
+                  SizedBox(height: 8),
+                  Text(
+                    ' المادة: $_selectedSubjectName',
+                    style: TextStyle(fontSize: 18,color: Colors.cyan),
                   ),
                   SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: submitForm,
-                    child: Text('اضافة العلومات'),
-                  ),
                 ],
-              ),
-            ),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: _firstNameController,
+                        decoration: InputDecoration(labelText: 'الأسم '),
 
-          ],
-        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'الرجاء ادخال اسم';
+                          }
+                          return null;
+                        },
+                      ),
+                      TextFormField(
+                        controller: _lastNameController,
+                        decoration: InputDecoration(labelText: 'الكنية'),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'الرجاء ادخال الكنية';
+                          }
+                          return null;
+                        },
+                      ),
+                      TextFormField(
+                        controller: _descriptionController,
+                        decoration: InputDecoration(labelText: 'معلومات عن المعلم'),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'الرجاء ادخال معلومات ';
+                          }
+                          return null;
+                        },
+                      ),
+                      TextFormField(
+                        controller: _phoneNoController,
+                        decoration: InputDecoration(labelText: 'رقم الهاتف'),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'الرجاء ادخال رقم';
+                          }
+                          return null;
+                        },
+                      ),
+                      TextFormField(
+                        controller: _teachingDurationController,
+                        decoration: InputDecoration(labelText: 'مدة التدريس'),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return '  الرجاء ادخال مدة بالارقام';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: submitForm,
+                        child: Text('اضافة العلومات'),
+                      ),
+                    ],
+                  ),
+                ),
+
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

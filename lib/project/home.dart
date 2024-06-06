@@ -7,7 +7,9 @@ import 'package:untitled34/project/register_admin.dart';
 import 'package:untitled34/project/add_video.dart';
 import 'package:untitled34/project/add_file.dart';
 import 'package:untitled34/project/add_teacher.dart';
+import 'package:untitled34/project/show_admins.dart';
 import 'package:untitled34/project/show_files.dart';
+import 'package:untitled34/project/show_profile.dart';
 import 'package:untitled34/project/show_subjects.dart';
 import 'package:untitled34/project/show_teachers.dart';
 import 'package:untitled34/project/signin.dart';
@@ -18,11 +20,13 @@ class Login extends StatefulWidget {
 
   Login();
 
+
   @override
   State<Login> createState() => _LoginState();
 }
 
 class _LoginState extends State<Login> {
+
   Future<String> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('access_token') ?? '';
@@ -50,41 +54,124 @@ class _LoginState extends State<Login> {
       });
     }
   }
-
   bool notify = false;
   bool night = false;
   @override
   Widget build(BuildContext context) {
+    final isDesktop = MediaQuery.of(context).size.width >= 829;
+    final isDesk = MediaQuery.of(context).size.width >= 1470;
 
     return Scaffold(
-      body: ListView(children: [
+
+    body: ListView(children: [
         Row(
+
 mainAxisAlignment: MainAxisAlignment.end,
           children: [
+            isDesk?Row(children: [
+              Row(
+                children: [
+                  IconButton(
+                      icon: const Icon(
+
+                        Icons.account_circle_sharp
+                        ,color: Colors.blueGrey,
+                      ),onPressed: (){
+                    Navigator.push(
+                      context, MaterialPageRoute(builder: (context) {
+                      return ProfileScreen();
+                    }),);
+                  },),
+                  Text("تفاصيل الملف الشخصي")
+                ],
+              ),
+
+              SizedBox(width: 470,),
+            ],):Container(),
+
+           isDesktop?Row(children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
+                child: Container( decoration: BoxDecoration(
+                    color: Colors.white54,
+                    borderRadius: BorderRadius.circular(12)),
+                  height: 40,
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.notification_important,color: Colors.blueGrey,
+                        ),onPressed: (){},),
+
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 50,vertical: 10),
+                child: Container( decoration: BoxDecoration(
+                    color: Colors.white54,
+                    borderRadius: BorderRadius.circular(12)),
+                  height: 40,
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.forward_to_inbox,color: Colors.blueGrey,
+                        ),onPressed: (){
+
+                      },),
+
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
+                child: Container( decoration: BoxDecoration(
+                    color: Colors.white54,
+                    borderRadius: BorderRadius.circular(12)),
+                  height: 40,
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.home,color: Colors.blueGrey,
+                        ),onPressed: (){
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(builder: (context) => Login()),
+                              (Route<dynamic> route) => false,
+                        );
+                      },),
+
+                    ],
+                  ),
+                ),
+              ),
+             SizedBox(width: 300,),
+
+           ],):Container(),
+
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25),
+              padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 7),
               child: Container( decoration: BoxDecoration(
-                  color: Colors.red,
+                  color: Colors.black12,
                   borderRadius: BorderRadius.circular(12)),
-                width: 200,
-                height: 25,
+                width: 230,
+                height: 40,
                 child: TextField(
                   decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText: "  بحث",
-                      hintStyle: TextStyle(color: Colors.black),
-                      prefixIcon: Icon(Icons.search,color: Colors.black,)
+                      hintText: "                                       بحث  ",
+                      hoverColor: Colors.cyan,
+                      suffixIcon: IconButton(
+                        icon: const Icon(
+                          Icons.search_rounded,color: Colors.black12,
+                        ),onPressed: (){},),
                   ),
                 ),),
             ),
-            IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.notifications,
-                  size: 30,
-                  color: Colors.blue,
-                )),
-            Text("     "),
+
           ],
         ),
        Row(children: [
@@ -180,7 +267,7 @@ mainAxisAlignment: MainAxisAlignment.end,
                                    Column(
                                      mainAxisAlignment: MainAxisAlignment.center,
                                      children: [
-                                       Icon(Icons.supervised_user_circle,color:Colors.yellow,),
+                                       Icon(Icons.supervised_user_circle,color:Colors.deepOrange,),
 
                                        Text("المستخدمين",style: TextStyle(color: Colors.black,fontSize: 18,fontWeight: FontWeight.w800),)
                                      ],
@@ -192,6 +279,13 @@ mainAxisAlignment: MainAxisAlignment.end,
 
                            ],
                          ),
+
+                         // لعرض معلومات المستخدمين
+                         Row(children: [
+                           Container(),
+                           Container(),
+
+                         ],),
 
                          SizedBox(height: 100,),
 
@@ -209,9 +303,9 @@ mainAxisAlignment: MainAxisAlignment.end,
          Padding(
            padding: const EdgeInsets.symmetric(horizontal: 1),
            child: Container( decoration: BoxDecoration(
-               color: Colors.black12,
+               color: Colors.white70,
                borderRadius: BorderRadius.circular(3)),
-             width: 250,
+             width: 230,
              height: 672,
              child:
            Column(children: [
@@ -228,13 +322,16 @@ mainAxisAlignment: MainAxisAlignment.end,
                child:  Container( decoration: BoxDecoration(
                        ),
                        width: 230,
-                       height: 60,
+                       height: 40,
                        child:
                        Row(
+                         mainAxisAlignment: MainAxisAlignment.end,
                          children: [
+                           Text("   إضافة معلومات معلم",style: TextStyle(color: Colors.black,fontSize: 16),),
                            SizedBox(width: 15,),
-                           Icon(Icons.person_add,color: Colors.deepOrange,size: 40,),
-                           Text("   إضافة معلومات معلم",style: TextStyle(color: Colors.black,fontSize: 18),),
+
+                           Icon(Icons.person,color: Colors.brown,size: 27,),
+
                          ],
                        )
                ),
@@ -252,13 +349,15 @@ mainAxisAlignment: MainAxisAlignment.end,
                child: Container( decoration: BoxDecoration(
                  ),
                      width: 230,
-                     height: 60,
+                     height: 40,
                      child:
                      Row(
+                       mainAxisAlignment: MainAxisAlignment.end,
                        children: [
+
+                         Text("   رفع ملف",style: TextStyle(color: Colors.black,fontSize: 16),),
                          SizedBox(width: 15,),
-                         Icon(Icons.file_upload,color: Colors.green,size: 40,),
-                         Text("   رفع ملف",style: TextStyle(color: Colors.black,fontSize: 18),),
+                         Icon(Icons.file_upload,color: Colors.green,size: 27,),
                        ],
                      )
                  ),
@@ -279,13 +378,15 @@ mainAxisAlignment: MainAxisAlignment.end,
                child: Container( decoration: BoxDecoration(
                ),
                    width: 230,
-                   height: 60,
+                   height: 40,
                    child:
                    Row(
+                     mainAxisAlignment: MainAxisAlignment.end,
                      children: [
+
+                       Text("   رفع صورة",style: TextStyle(color: Colors.black,fontSize: 16),),
                        SizedBox(width: 15,),
-                       Icon(Icons.image,color: Colors.purple,size: 40,),
-                       Text("   رفع صورة",style: TextStyle(color: Colors.black,fontSize: 18),),
+                       Icon(Icons.image,color: Colors.purple,size: 27,),
                      ],
                    )
                ),
@@ -305,13 +406,15 @@ mainAxisAlignment: MainAxisAlignment.end,
                child: Container( decoration: BoxDecoration(
                ),
                    width: 230,
-                   height: 60,
+                   height: 40,
                    child:
                    Row(
+                     mainAxisAlignment: MainAxisAlignment.end,
                      children: [
+
+                       Text("   رفع كتاب",style: TextStyle(color: Colors.black,fontSize: 16),),
                        SizedBox(width: 15,),
-                       Icon(Icons.file_copy_sharp,color: Colors.amber,size: 40,),
-                       Text("   رفع كتاب",style: TextStyle(color: Colors.black,fontSize: 18),),
+                       Icon(Icons.file_copy_sharp,color: Colors.amber,size: 27,),
                      ],
                    )
                ),
@@ -330,13 +433,15 @@ mainAxisAlignment: MainAxisAlignment.end,
                child:  Container( decoration: BoxDecoration(
                  ),
                      width: 230,
-                     height: 60,
+                     height: 40,
                      child:
                      Row(
+                       mainAxisAlignment: MainAxisAlignment.end,
                        children: [
+
+                         Text("   رفع فيديو",style: TextStyle(color: Colors.black,fontSize: 16),),
                          SizedBox(width: 15,),
-                         Icon(Icons.video_call,color: Colors.blue,size: 40,),
-                         Text("   رفع فيديو",style: TextStyle(color: Colors.black,fontSize: 18),),
+                         Icon(Icons.video_call,color: Colors.blue,size: 27,),
                        ],
                      )
                  ),
@@ -350,13 +455,15 @@ mainAxisAlignment: MainAxisAlignment.end,
                child: Container( decoration: BoxDecoration(
                  ),
                      width: 230,
-                     height: 60,
+                     height: 40,
                      child:
                      Row(
+                       mainAxisAlignment: MainAxisAlignment.end,
                        children: [
+
+                         Text("   انشاء سبر",style: TextStyle(color: Colors.black,fontSize: 16),),
                          SizedBox(width: 15,),
-                         Icon(Icons.question_mark,color: Colors.red,size: 40,),
-                         Text("   انشاء سبر",style: TextStyle(color: Colors.black,fontSize: 18),),
+                         Icon(Icons.question_mark,color: Colors.red,size: 27,),
                        ],
                      )
 
@@ -375,13 +482,15 @@ mainAxisAlignment: MainAxisAlignment.end,
                child: Container( decoration: BoxDecoration(
                ),
                    width: 230,
-                   height: 60,
+                   height: 40,
                    child:
                    Row(
+                     mainAxisAlignment: MainAxisAlignment.end,
                      children: [
+
+                       Text("   اضافة مادة ",style: TextStyle(color: Colors.black,fontSize: 16),),
                        SizedBox(width: 15,),
-                       Icon(Icons.subject,color: Colors.pinkAccent,size: 40,),
-                       Text("   اضافة مادة ",style: TextStyle(color: Colors.black,fontSize: 18),),
+                       Icon(Icons.subject,color: Colors.pinkAccent,size: 27,),
                      ],
                    )
                ),
@@ -398,18 +507,50 @@ mainAxisAlignment: MainAxisAlignment.end,
                child:  Container( decoration: BoxDecoration(
                ),
                    width: 230,
-                   height: 60,
+                   height: 40,
                    child:
                    Row(
+                     mainAxisAlignment: MainAxisAlignment.end,
                      children: [
+
+                       Text("   انشاء حساب معلم",style: TextStyle(color: Colors.black,fontSize: 16),),
                        SizedBox(width: 15,),
-                       Icon(Icons.person_add,color: Colors.deepOrange,size: 40,),
-                       Text("   انشاء حساب معلم",style: TextStyle(color: Colors.black,fontSize: 18),),
+                       Icon(Icons.person_add,color: Colors.deepOrange,size: 27,),
                      ],
                    )
                ),
              ),
-           SizedBox(height: 50,),
+             MaterialButton(
+               onPressed: (){
+                 Navigator.push(
+                   context, MaterialPageRoute(builder: (context) {
+                   return Admins();
+                 }),);
+               },
+               splashColor: Colors.cyan,
+               child:  Container( decoration: BoxDecoration(
+               ),
+                   width: 230,
+                   height: 40,
+                   child:
+                   Row(
+                     mainAxisAlignment: MainAxisAlignment.end,
+                     children: [
+
+                       Text(" الأدوار بالموقع ",style: TextStyle(color: Colors.black,fontSize: 16),),
+                       SizedBox(width: 15,),
+                       Icon(Icons.admin_panel_settings,color: Colors.cyan,size: 27,),
+                     ],
+                   )
+               ),
+             ),
+
+             SizedBox(height: 5,),
+
+             Container(
+               height: 200,
+             ),
+
              TextButton(
                onPressed: (){
 
@@ -440,13 +581,15 @@ mainAxisAlignment: MainAxisAlignment.end,
                  child: Container( decoration: BoxDecoration(
                      borderRadius: BorderRadius.circular(10)),
                      width: 230,
-                     height: 60,
+                     height: 40,
                      child:
                      Row(
+                       mainAxisAlignment: MainAxisAlignment.end,
                        children: [
+
+                         Text("   تسجيل خروج",style: TextStyle(color: Colors.black,fontSize: 13),),
                          SizedBox(width: 15,),
-                         Icon(Icons.logout,color: Colors.brown,size: 14,),
-                         Text("   تسجيل خروج",style: TextStyle(color: Colors.black,fontSize: 15),),
+                         Icon(Icons.logout,color: Colors.brown,size: 12,),
                        ],
                      )
                  ),

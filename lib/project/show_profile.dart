@@ -2,37 +2,32 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:untitled34/project/home.dart';
 
-class PdfList extends StatefulWidget {
-  final int subjectId;
-
-  PdfList({required this.subjectId});
-
+class ProfileScreen extends StatefulWidget {
   @override
-  _PdfListState createState() => _PdfListState();
+  _ProfileScreenState createState() => _ProfileScreenState();
 }
 
-class _PdfListState extends State<PdfList> {
-  List<Pdf> _pdfs = [];
+class _ProfileScreenState extends State<ProfileScreen> {
+  Map<String, dynamic>? _profileData;
   bool _isLoading = false;
   String _message = '';
 
   @override
   void initState() {
     super.initState();
-    _fetchPdfs();
+    _fetchProfile();
   }
 
-  Future<void> _fetchPdfs() async {
+  Future<void> _fetchProfile() async {
     setState(() {
       _isLoading = true;
     });
 
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('access_token') ?? '';
-    final url = Uri.parse('http://127.0.0.1:8000/api/retrivePdf/admin/${widget.subjectId}');
+    final url = Uri.parse('http://127.0.0.1:8000/api/profile/admin');
 
     try {
       final response = await http.get(
@@ -44,26 +39,25 @@ class _PdfListState extends State<PdfList> {
 
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
-        if (jsonResponse['status'] == true) {
+        print('Response: $jsonResponse'); // Log the response
+        if (jsonResponse['status'] == 1) {
           setState(() {
-            _pdfs = (jsonResponse['data'] as List)
-                .map((pdfJson) => Pdf.fromJson(pdfJson))
-                .toList();
-            _message = "لا يوجد ملفات لعرضها";
+            _profileData = jsonResponse['data'];
+            _message = jsonResponse['message'];
           });
         } else {
           setState(() {
-            _message = 'Failed to retrieve PDFs.';
+            _message = 'Failed to retrieve profile data.';
           });
         }
       } else {
         setState(() {
-          _message = 'Failed to retrieve PDFs. Status code: ${response.statusCode}';
+          _message = 'Failed to retrieve profile data. Status code: ${response.statusCode}';
         });
       }
     } catch (e) {
       setState(() {
-        _message = 'Error fetching PDFs: $e';
+        _message = 'Error fetching profile data: $e';
       });
     } finally {
       setState(() {
@@ -76,24 +70,14 @@ class _PdfListState extends State<PdfList> {
   Widget build(BuildContext context) {
     final isDesktop = MediaQuery.of(context).size.width >= 829;
     final isDesk = MediaQuery.of(context).size.width >= 1470;
-
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          title:             Row(
+    return Scaffold(
+      appBar:
+      AppBar(
+        backgroundColor: Colors.white,
+        title:   Row(
 
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            isDesk?Row(children: [
-              IconButton(
-                icon: const Icon(
-                  Icons.person,color: Colors.blueGrey,
-                ),onPressed: (){},),
-
-              SizedBox(width: 600,),
-            ],):Container(),
 
             isDesktop?Row(children: [
               Padding(
@@ -180,74 +164,99 @@ class _PdfListState extends State<PdfList> {
 
           ],
         ),
-          automaticallyImplyLeading: false, // هذا يمنع ظهور أيقونة الرجوع التلقائية
-
-        ),
-        body: _isLoading
-            ? Center(child: CircularProgressIndicator())
-            : _pdfs.isNotEmpty
-            ? ListView.builder(
-          padding: EdgeInsets.all(20),
-          itemCount: _pdfs.length,
-          itemBuilder: (context, index) {
-            final pdf = _pdfs[index];
-            return Card(
-              child: ListTile(
-                title: Text(pdf.name),
-                subtitle: Text(pdf.url),
-                trailing: IconButton(
-                  icon: Icon(Icons.picture_as_pdf),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PdfViewerScreen(pdfUrl: pdf.url),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            );
-          },
-        )
-            : Center(child: Text(_message)),
+        automaticallyImplyLeading: false, // هذا يمنع ظهور أيقونة الرجوع التلقائية
       ),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : _profileData != null
+          ? Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                MaterialButton(
+                  onPressed: (){
+                  },
+                  child:  Container(
+                      decoration: BoxDecoration(
+                  ),
+                      width: 170,
+                      height: 40,
+                      child:
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text("   تعديل المعلومات ",style: TextStyle(color: Colors.black,fontSize: 16),),
+                          SizedBox(width: 4,),
+                          Icon(Icons.edit,color: Colors.blue,size: 15,),
+                        ],
+                      )
+                  ),
+
+
+                ),
+
+                Text("     تفاصيل الملف الشخصي" ,style: TextStyle(fontSize: 20,fontWeight: FontWeight.w900),)
+              ],
+            ),
+
+            SizedBox(height: 35,),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                  Text(' ${_profileData!['first_name']} ',style: TextStyle(color: Colors.black,fontWeight: FontWeight.w900,fontSize: 23),),
+                Text(' ${_profileData!['last_name']} ',style: TextStyle(color: Colors.black,fontWeight: FontWeight.w900,fontSize: 23),),
+
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(' ${_profileData!['email']} ',style: TextStyle(color: Colors.black,fontWeight: FontWeight.w900,fontSize: 17),),
+                Text(" : الأيميل  " ,style: TextStyle(fontSize: 20),),
+                Icon(Icons.email,color: Colors.blueGrey,),
+
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(' ${_profileData!['role']} ',style: TextStyle(color: Colors.black,fontWeight: FontWeight.w900,fontSize: 17),),
+                Text(" : الدور  " ,style: TextStyle(fontSize: 20),),
+                Icon(Icons.accessibility_new_sharp,color: Colors.blueGrey,),
+
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(' ${_profileData!['phone_no']} ',style: TextStyle(color: Colors.black,fontWeight: FontWeight.w900,fontSize: 17),),
+                Text(" : رقم الهاتف  " ,style: TextStyle(fontSize: 20),),
+                Icon(Icons.phone,color: Colors.blueGrey,),
+
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(' ${_profileData!['created_at']} ',style: TextStyle(color: Colors.black,fontWeight: FontWeight.w900,fontSize: 17),),
+                Text(" : تاريخ الانشاء  " ,style: TextStyle(fontSize: 20),),
+                Icon(Icons.date_range_outlined,color: Colors.blueGrey,),
+
+              ],
+            ),
+
+
+          ],
+        ),
+      )
+          : Center(child: Text(_message)),
     );
   }
 }
 
-class PdfViewerScreen extends StatelessWidget {
-  final String pdfUrl;
-
-  PdfViewerScreen({required this.pdfUrl});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SfPdfViewer.network(pdfUrl),
-    );
-  }
-}
-
-class Pdf {
-  final int id;
-  final int subjectId;
-  final String name;
-  final String url;
-
-  Pdf({
-    required this.id,
-    required this.subjectId,
-    required this.name,
-    required this.url,
-  });
-
-  factory Pdf.fromJson(Map<String, dynamic> json) {
-    return Pdf(
-      id: json['id'],
-      subjectId: int.parse(json['subject_id']),
-      name: json['name'],
-      url: json['url'],
-    );
-  }
-}
