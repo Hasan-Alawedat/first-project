@@ -49,7 +49,7 @@ class _ImageListState extends State<ImageList> {
             _images = (jsonResponse['data'] as List)
                 .map((imageJson) => ImageModel.fromJson(imageJson))
                 .toList();
-            _message = jsonResponse['message'];
+            _message = "لا يوجد صور لعرضها";
           });
         } else {
           setState(() {
@@ -72,6 +72,67 @@ class _ImageListState extends State<ImageList> {
     }
   }
 
+  Future<String?> _getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('access_token');
+  }
+
+  Future<void> _deleteImage(int id) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final token = await _getToken();
+
+    if (token == null || token.isEmpty) {
+      setState(() {
+        _isLoading = false;
+        _message = 'Error: Access token is null or empty';
+      });
+      print('Error: Access token is null or empty');
+      return;
+    }
+
+    final url = Uri.parse('http://127.0.0.1:8000/api/deletePhoto/$id');
+
+    try {
+      final response = await http.delete(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json', // تأكد من إضافة مفتاح Accept
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final jsonResponse = json.decode(response.body);
+        if (jsonResponse['status'] == true) {
+          setState(() {
+            _images.removeWhere((image) => image.id == id); // Remove the deleted image from the list
+            _message = jsonResponse['message'];
+          });
+        } else {
+          setState(() {
+            _message = 'Failed to delete image.';
+          });
+        }
+      } else {
+        setState(() {
+          _message = 'Failed to delete image. Status code: ${response.statusCode}';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _message = 'Error deleting image: $e';
+      });
+      print('Error deleting image: $e'); // نقطة تصحيح
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDesktop = MediaQuery.of(context).size.width >= 829;
@@ -79,106 +140,108 @@ class _ImageListState extends State<ImageList> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title:             Row(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            isDesk ? Row(
+              children: [
+                IconButton(
+                  icon: const Icon(
+                    Icons.person, color: Colors.blueGrey,
+                  ), onPressed: () {},),
 
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          isDesk?Row(children: [
-            IconButton(
-              icon: const Icon(
-                Icons.person,color: Colors.blueGrey,
-              ),onPressed: (){},),
+                SizedBox(width: 600,),
+              ],
+            ) : Container(),
 
-            SizedBox(width: 600,),
-          ],):Container(),
+            isDesktop ? Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                  child: Container(decoration: BoxDecoration(
+                      color: Colors.white54,
+                      borderRadius: BorderRadius.circular(12)),
+                    height: 40,
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.notification_important, color: Colors.blueGrey,
+                          ), onPressed: () {},),
 
-          isDesktop?Row(children: [
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+                  child: Container(decoration: BoxDecoration(
+                      color: Colors.white54,
+                      borderRadius: BorderRadius.circular(12)),
+                    height: 40,
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.forward_to_inbox, color: Colors.blueGrey,
+                          ), onPressed: () {
+
+                        },),
+
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                  child: Container(decoration: BoxDecoration(
+                      color: Colors.white54,
+                      borderRadius: BorderRadius.circular(12)),
+                    height: 40,
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.home, color: Colors.blueGrey,
+                          ), onPressed: () {
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(builder: (context) => Login()),
+                                (Route<dynamic> route) => false,
+                          );
+                        },),
+
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(width: 280,),
+
+              ],
+            ) : Container(),
+
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
-              child: Container( decoration: BoxDecoration(
-                  color: Colors.white54,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+              child: Container(decoration: BoxDecoration(
+                  color: Colors.black12,
                   borderRadius: BorderRadius.circular(12)),
+                width: 230,
                 height: 40,
-                child: Row(
-                  children: [
-                    IconButton(
+                child: TextField(
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: "                                       بحث  ",
+                    hoverColor: Colors.cyan,
+                    suffixIcon: IconButton(
                       icon: const Icon(
-                        Icons.notification_important,color: Colors.blueGrey,
-                      ),onPressed: (){},),
-
-                  ],
-                ),
-              ),
+                        Icons.search_rounded, color: Colors.black12,
+                      ), onPressed: () {},),
+                  ),
+                ),),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 50,vertical: 10),
-              child: Container( decoration: BoxDecoration(
-                  color: Colors.white54,
-                  borderRadius: BorderRadius.circular(12)),
-                height: 40,
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(
-                        Icons.forward_to_inbox,color: Colors.blueGrey,
-                      ),onPressed: (){
 
-                    },),
-
-                  ],
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
-              child: Container( decoration: BoxDecoration(
-                  color: Colors.white54,
-                  borderRadius: BorderRadius.circular(12)),
-                height: 40,
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(
-                        Icons.home,color: Colors.blueGrey,
-                      ),onPressed: (){
-                      Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(builder: (context) => Login()),
-                            (Route<dynamic> route) => false,
-                      );
-                    },),
-
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(width: 280,),
-
-          ],):Container(),
-
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 7),
-            child: Container( decoration: BoxDecoration(
-                color: Colors.black12,
-                borderRadius: BorderRadius.circular(12)),
-              width: 230,
-              height: 40,
-              child: TextField(
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: "                                       بحث  ",
-                  hoverColor: Colors.cyan,
-                  suffixIcon: IconButton(
-                    icon: const Icon(
-                      Icons.search_rounded,color: Colors.black12,
-                    ),onPressed: (){},),
-                ),
-              ),),
-          ),
-
-        ],
-      ),
+          ],
+        ),
         automaticallyImplyLeading: false, // هذا يمنع ظهور أيقونة الرجوع التلقائية
-
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
@@ -188,26 +251,82 @@ class _ImageListState extends State<ImageList> {
         itemCount: _images.length,
         itemBuilder: (context, index) {
           final image = _images[index];
-          return Card(
-            child: ListTile(
-              title: Text(image.name),
-              subtitle: Text(image.url),
-              trailing: IconButton(
-                icon: Icon(Icons.image),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ImageViewerScreen(imageUrl: image.url),
-                    ),
-                  );
-                },
-              ),
-            ),
+          return ImageCard(
+            image: image,
+            onView: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ImageViewerScreen(imageUrl: image.url),
+                ),
+              );
+            },
+            onDelete: () {
+              _deleteImage(image.id);
+            },
           );
         },
       )
           : Center(child: Text(_message)),
+    );
+  }
+}
+
+class ImageCard extends StatelessWidget {
+  final ImageModel image;
+  final VoidCallback onView;
+  final VoidCallback onDelete;
+
+  ImageCard({required this.image, required this.onView, required this.onDelete});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(Icons.image, color: Colors.blue, size: 40),
+              title: Text(
+                image.name,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blueGrey,
+                ),
+              ),
+              subtitle: Text(
+                image.url,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.blueGrey[300],
+                ),
+              ),
+              trailing: IconButton(
+                icon: Icon(Icons.visibility, color: Colors.green, size: 30),
+                onPressed: onView,
+              ),
+            ),
+            SizedBox(height: 8),
+            Divider(),
+            Align(
+              alignment: Alignment.centerRight,
+              child: IconButton(
+                icon: Icon(Icons.delete, color: Colors.red, size: 30),
+                onPressed: onDelete,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

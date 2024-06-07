@@ -72,6 +72,13 @@ class _PdfListState extends State<PdfList> {
     }
   }
 
+  Future<String?> _getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('access_token');
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     final isDesktop = MediaQuery.of(context).size.width >= 829;
@@ -82,106 +89,108 @@ class _PdfListState extends State<PdfList> {
       home: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
-          title:             Row(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              isDesk ? Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(
+                      Icons.person, color: Colors.blueGrey,
+                    ), onPressed: () {},),
 
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            isDesk?Row(children: [
-              IconButton(
-                icon: const Icon(
-                  Icons.person,color: Colors.blueGrey,
-                ),onPressed: (){},),
+                  SizedBox(width: 600,),
+                ],
+              ) : Container(),
 
-              SizedBox(width: 600,),
-            ],):Container(),
+              isDesktop ? Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                    child: Container(decoration: BoxDecoration(
+                        color: Colors.white54,
+                        borderRadius: BorderRadius.circular(12)),
+                      height: 40,
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(
+                              Icons.notification_important, color: Colors.blueGrey,
+                            ), onPressed: () {},),
 
-            isDesktop?Row(children: [
+                        ],
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+                    child: Container(decoration: BoxDecoration(
+                        color: Colors.white54,
+                        borderRadius: BorderRadius.circular(12)),
+                      height: 40,
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(
+                              Icons.forward_to_inbox, color: Colors.blueGrey,
+                            ), onPressed: () {
+
+                          },),
+
+                        ],
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                    child: Container(decoration: BoxDecoration(
+                        color: Colors.white54,
+                        borderRadius: BorderRadius.circular(12)),
+                      height: 40,
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(
+                              Icons.home, color: Colors.blueGrey,
+                            ), onPressed: () {
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(builder: (context) => Login()),
+                                  (Route<dynamic> route) => false,
+                            );
+                          },),
+
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 280,),
+
+                ],
+              ) : Container(),
+
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
-                child: Container( decoration: BoxDecoration(
-                    color: Colors.white54,
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+                child: Container(decoration: BoxDecoration(
+                    color: Colors.black12,
                     borderRadius: BorderRadius.circular(12)),
+                  width: 230,
                   height: 40,
-                  child: Row(
-                    children: [
-                      IconButton(
+                  child: TextField(
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: "                                       بحث  ",
+                      hoverColor: Colors.cyan,
+                      suffixIcon: IconButton(
                         icon: const Icon(
-                          Icons.notification_important,color: Colors.blueGrey,
-                        ),onPressed: (){},),
-
-                    ],
-                  ),
-                ),
+                          Icons.search_rounded, color: Colors.black12,
+                        ), onPressed: () {},),
+                    ),
+                  ),),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 50,vertical: 10),
-                child: Container( decoration: BoxDecoration(
-                    color: Colors.white54,
-                    borderRadius: BorderRadius.circular(12)),
-                  height: 40,
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.forward_to_inbox,color: Colors.blueGrey,
-                        ),onPressed: (){
 
-                      },),
-
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
-                child: Container( decoration: BoxDecoration(
-                    color: Colors.white54,
-                    borderRadius: BorderRadius.circular(12)),
-                  height: 40,
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.home,color: Colors.blueGrey,
-                        ),onPressed: (){
-                        Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (context) => Login()),
-                              (Route<dynamic> route) => false,
-                        );
-                      },),
-
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(width: 280,),
-
-            ],):Container(),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 7),
-              child: Container( decoration: BoxDecoration(
-                  color: Colors.black12,
-                  borderRadius: BorderRadius.circular(12)),
-                width: 230,
-                height: 40,
-                child: TextField(
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: "                                       بحث  ",
-                    hoverColor: Colors.cyan,
-                    suffixIcon: IconButton(
-                      icon: const Icon(
-                        Icons.search_rounded,color: Colors.black12,
-                      ),onPressed: (){},),
-                  ),
-                ),),
-            ),
-
-          ],
-        ),
+            ],
+          ),
           automaticallyImplyLeading: false, // هذا يمنع ظهور أيقونة الرجوع التلقائية
-
         ),
         body: _isLoading
             ? Center(child: CircularProgressIndicator())
@@ -191,26 +200,80 @@ class _PdfListState extends State<PdfList> {
           itemCount: _pdfs.length,
           itemBuilder: (context, index) {
             final pdf = _pdfs[index];
-            return Card(
-              child: ListTile(
-                title: Text(pdf.name),
-                subtitle: Text(pdf.url),
-                trailing: IconButton(
-                  icon: Icon(Icons.picture_as_pdf),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PdfViewerScreen(pdfUrl: pdf.url),
-                      ),
-                    );
-                  },
-                ),
-              ),
+            return PdfCard(
+              pdf: pdf,
+              onView: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PdfViewerScreen(pdfUrl: pdf.url),
+                  ),
+                );
+              },
             );
           },
         )
             : Center(child: Text(_message)),
+      ),
+    );
+  }
+}
+
+class PdfCard extends StatelessWidget {
+  final Pdf pdf;
+  final VoidCallback onView;
+
+  PdfCard({required this.pdf, required this.onView});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(Icons.picture_as_pdf, color: Colors.red, size: 40),
+              title: Text(
+                pdf.name,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blueGrey,
+                ),
+              ),
+              subtitle: Text(
+                pdf.url,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.blueGrey[300],
+                ),
+              ),
+              trailing: IconButton(
+                icon: Icon(Icons.visibility, color: Colors.green, size: 30),
+                onPressed: onView,
+              ),
+            ),
+            SizedBox(height: 8),
+            Divider(),
+            Align(
+              alignment: Alignment.centerRight,
+              child: IconButton(
+                icon: Icon(Icons.delete, color: Colors.red, size: 30),
+                onPressed: () {
+                  // Add delete functionality here if needed
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

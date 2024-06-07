@@ -52,7 +52,7 @@ class _ProfileScreenState extends State<Admins> {
         }
       } else {
         setState(() {
-          _message = 'Failed to retrieve profile data. Status code: ${response.statusCode}';
+          _message = 'هذا مخصص فقط للشخص المسؤول : ${response.statusCode}';
         });
       }
     } catch (e) {
@@ -66,50 +66,41 @@ class _ProfileScreenState extends State<Admins> {
     }
   }
 
-  Future<void> _deleteAdmin(int id) async {
+  Future<String> getToken() async {
     final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('access_token') ?? '';
-    final idd = jsonEncode({'id': id});
-    final url = Uri.parse('http://127.0.0.1:8000/api/delete-admin/$idd');
+    return prefs.getString('access_token') ?? '';
+  }
 
-    try {
-      final response = await http.delete(
-        url,
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: jsonEncode({'id': id}),
-      );
+  Future<void> _deleteAdmin(int id) async {
+    var token = await getToken();
 
-      print('Delete Response: ${response.statusCode}');
-      print('Delete Response Body: ${response.body}');
+    final response = await http.delete(
+      Uri.parse('http://127.0.0.1:8000/api/delete-admin/$id'),  // تعديل هنا
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": "Bearer $token",
+      },
+    );
 
-      if (response.statusCode == 200) {
-        final jsonResponse = json.decode(response.body);
-        if (jsonResponse['status'] == true) {
-          setState(() {
-            _profileData!.removeWhere((profile) => profile['id'] == id);
-            _message = jsonResponse['message'];
-          });
-        } else {
-          setState(() {
-            _message = 'Failed to delete admin.';
-          });
-        }
+    if (response.statusCode == 200) {
+      final jsonResponse = json.decode(response.body);
+      if (jsonResponse['status'] == true) {
+        setState(() {
+          _profileData!.removeWhere((profile) => profile['id'] == id);
+          _message = jsonResponse['message'];
+        });
       } else {
         setState(() {
-          _message = 'Failed to delete admin. Status code: ${response.statusCode}';
+          _message = 'Failed to delete admin.';
         });
       }
-    } catch (e) {
+    } else {
       setState(() {
-        _message = 'Error deleting admin: $e';
+        _message = 'Failed to delete admin. Status code: ${response.statusCode}';
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {

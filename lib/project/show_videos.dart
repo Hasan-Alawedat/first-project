@@ -273,33 +273,62 @@ class _VideoListState extends State<VideoList> {
           itemBuilder: (context, index) {
             final video = _videos[index];
             return Container(
-              child: Card(
-                child: Column(
-                  children: [
-                    ListTile(
-                      title: Text(video.name),
-                      subtitle: Text(video.url),
-                      trailing: IconButton(
-                        icon: Icon(Icons.play_arrow),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => VideoPlayerScreen(videoUrl: video.url), // استخدم الـ url
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () {
-                        _deleteVideo(video.id);
-                      },
-                    ),
-                  ],
+              child:  Card(
+                margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-              ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: Icon(Icons.video_library, color: Colors.blue, size: 40),
+                        title: Text(
+                          video.name,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blueGrey,
+                          ),
+                        ),
+                        subtitle: Text(
+                          video.url,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.blueGrey[300],
+                          ),
+                        ),
+                        trailing: IconButton(
+                          icon: Icon(Icons.play_arrow, color: Colors.green, size: 30),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => VideoPlayerScreen(videoUrl: video.url), // استخدم الـ url
+                              ),
+                            );
+                          }
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Divider(),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: IconButton(
+                          icon: Icon(Icons.delete, color: Colors.red, size: 30),
+                          onPressed: () {
+                        _deleteVideo(video.id);
+                        }
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+             ),
             );
           },
         )
@@ -345,9 +374,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     final isDesktop = MediaQuery.of(context).size.width >= 829;
     final isDesk = MediaQuery.of(context).size.width >= 1470;
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Video Player'),
-      ),
       body: Center(
         child: _controller.value.isInitialized
             ? AspectRatio(

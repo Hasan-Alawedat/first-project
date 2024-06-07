@@ -180,8 +180,10 @@ class _SubjectDetailsScreenState extends State<SubjectDetailsScreen> {
             },
           ),
           _buildCardWithExpansionTile(
-            icon: Icons.image,
+            icon:
+            Icons.image,
             title: 'الصور',
+
             subtitle: '${subjectDetails!['photos_num'] ?? 'N/A'}',
             onTap: () {
               Navigator.push(
@@ -236,18 +238,11 @@ class _SubjectDetailsScreenState extends State<SubjectDetailsScreen> {
     VoidCallback? onTap, // إضافة هذا المعامل لاستخدامه في التنقل
   }) {
     return Card(
-      color: Colors.white,
-      elevation: 4,
-      margin: EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        children: [
-          ListTile(
-            leading: Icon(icon,color: Colors.blue,),
-            title: Text(title),
-            subtitle: Text(subtitle),
-            onTap: onTap, // استدعاء onTap عند النقر
-          ),
-        ],
+      child: ListTile(
+        leading: Icon(icon, color: Colors.blue),
+        title: Text(title, style: Theme.of(context).textTheme.titleLarge,),
+        subtitle: Text(subtitle, style: Theme.of(context).textTheme.bodyMedium),
+        onTap: onTap,
       ),
     );
   }

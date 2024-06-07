@@ -261,7 +261,7 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
                     SizedBox(height: 8.0),
                     Text(
                       'المادة : ${subject.subjectName}',
-                      style: TextStyle(fontSize: 16.0),
+                      style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.w900),
                     ),
                     SizedBox(height: 8.0),
                     Row(

@@ -137,109 +137,111 @@ class _BookListState extends State<BookList> {
   Widget build(BuildContext context) {
     final isDesktop = MediaQuery.of(context).size.width >= 829;
     final isDesk = MediaQuery.of(context).size.width >= 1470;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title:             Row(
-
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          isDesk?Row(children: [
-            IconButton(
-              icon: const Icon(
-                Icons.person,color: Colors.blueGrey,
-              ),onPressed: (){},),
-
-            SizedBox(width: 600,),
-          ],):Container(),
-
-          isDesktop?Row(children: [
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            isDesk ? Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.person, color: Colors.blueGrey),
+                  onPressed: () {},
+                ),
+                SizedBox(width: 600),
+              ],
+            ) : Container(),
+            isDesktop ? Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white54,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    height: 40,
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.notification_important, color: Colors.blueGrey),
+                          onPressed: () {},
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white54,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    height: 40,
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.forward_to_inbox, color: Colors.blueGrey),
+                          onPressed: () {},
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white54,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    height: 40,
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.home, color: Colors.blueGrey),
+                          onPressed: () {
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(builder: (context) => Login()),
+                                  (Route<dynamic> route) => false,
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(width: 280),
+              ],
+            ) : Container(),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
-              child: Container( decoration: BoxDecoration(
-                  color: Colors.white54,
-                  borderRadius: BorderRadius.circular(12)),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black12,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                width: 230,
                 height: 40,
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(
-                        Icons.notification_important,color: Colors.blueGrey,
-                      ),onPressed: (){},),
-
-                  ],
+                child: TextField(
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: "                                       بحث  ",
+                    hoverColor: Colors.cyan,
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.search_rounded, color: Colors.black12),
+                      onPressed: () {},
+                    ),
+                  ),
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 50,vertical: 10),
-              child: Container( decoration: BoxDecoration(
-                  color: Colors.white54,
-                  borderRadius: BorderRadius.circular(12)),
-                height: 40,
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(
-                        Icons.forward_to_inbox,color: Colors.blueGrey,
-                      ),onPressed: (){
-
-                    },),
-
-                  ],
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
-              child: Container( decoration: BoxDecoration(
-                  color: Colors.white54,
-                  borderRadius: BorderRadius.circular(12)),
-                height: 40,
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(
-                        Icons.home,color: Colors.blueGrey,
-                      ),onPressed: (){
-                      Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(builder: (context) => Login()),
-                            (Route<dynamic> route) => false,
-                      );
-                    },),
-
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(width: 280,),
-
-          ],):Container(),
-
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 7),
-            child: Container( decoration: BoxDecoration(
-                color: Colors.black12,
-                borderRadius: BorderRadius.circular(12)),
-              width: 230,
-              height: 40,
-              child: TextField(
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: "                                       بحث  ",
-                  hoverColor: Colors.cyan,
-                  suffixIcon: IconButton(
-                    icon: const Icon(
-                      Icons.search_rounded,color: Colors.black12,
-                    ),onPressed: (){},),
-                ),
-              ),),
-          ),
-
-        ],
-      ),
+          ],
+        ),
         automaticallyImplyLeading: false, // هذا يمنع ظهور أيقونة الرجوع التلقائية
-
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
@@ -249,34 +251,78 @@ class _BookListState extends State<BookList> {
         itemCount: _books.length,
         itemBuilder: (context, index) {
           final book = _books[index];
-          return Container(
-            child: Card(
-              child: Column(
-                children: [
-                  ListTile(
-                    title: Text(book.bookName),
-                    subtitle: Text(book.description),
-                    trailing: IconButton(
-                      icon: Icon(Icons.book),
-                      onPressed: () {
-                        // هنا يمكنك تنفيذ رمز لفتح الكتاب
-                      },
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.delete),
-                    onPressed: () {
-                      // عند الضغط على زر الحذف، قم بحذف الكتاب
-                      _deleteBook(book.id);
-                    },
-                  ),
-                ],
-              ),
-            ),
+          return BookCard(
+            book: book,
+            onDelete: () => _deleteBook(book.id),
           );
         },
       )
           : Center(child: Text(_message)),
+    );
+  }
+}
+
+// ويدجيت مخصص لعرض بطاقة الكتاب
+class BookCard extends StatelessWidget {
+  final Book book;
+  final VoidCallback onDelete;
+
+  BookCard({required this.book, required this.onDelete});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(Icons.book, color: Colors.blue, size: 40),
+              title: Text(
+                book.bookName,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blueGrey,
+                ),
+              ),
+              subtitle: Text(
+                book.description,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.blueGrey[300],
+                ),
+              ),
+              trailing:
+              TextButton(
+                onPressed: () {
+                  // هنا يمكنك تنفيذ رمز لفتح الكتاب
+                },
+                child: Text(
+                  "فتح الكتاب",
+                  style: TextStyle(color: Colors.blue),
+                ),
+              ),
+            ),
+            SizedBox(height: 8),
+            Divider(),
+            Align(
+              alignment: Alignment.centerRight,
+              child: IconButton(
+                icon: Icon(Icons.delete, color: Colors.red, size: 30),
+                onPressed: onDelete,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
